@@ -1,6 +1,7 @@
 import p5 from "p5";
+import { initCardBehaviors } from "./cardBehaviors.js";
 
-// Home hero — "TYPO COMPORTMENTS" estilo LOUDER
+// Home hero — "TIPO SENSÍVEL" estilo LOUDER
 // Halftone: título rasterizado em grade de pontos.
 // Eco: 5 cópias sobrepostas com offset direcional controlado pelo mouse.
 // O mesmo mecanismo do experimento ECO aplicado à identidade da série.
@@ -26,11 +27,11 @@ async function buildHero(p) {
   g.drawingContext.font = `170px SpaceGroteskHome`;
   g.drawingContext.textAlign = "center";
   g.drawingContext.textBaseline = "middle";
-  g.drawingContext.fillText("TYPO", p.width / 2, p.height * 0.42);
+  g.drawingContext.fillText("TIPO", p.width / 2, p.height * 0.42);
 
-  // "COMPORTMENTS" — menor, logo abaixo
+  // "SENSÍVEL" — menor, logo abaixo
   g.drawingContext.font = `58px SpaceGroteskHome`;
-  g.drawingContext.fillText("COMPORTMENTS", p.width / 2, p.height * 0.62);
+  g.drawingContext.fillText("SENSÍVEL", p.width / 2, p.height * 0.62);
 
   g.loadPixels();
 
@@ -85,3 +86,10 @@ new p5((p) => {
     buildHero(p);
   };
 });
+
+// Inicializa micro-sketches dos cards após o DOM estar pronto
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initCardBehaviors);
+} else {
+  initCardBehaviors();
+}

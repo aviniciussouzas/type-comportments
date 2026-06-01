@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Typo-comportments</title>
+    <title>TIPO SENSÍVEL</title>
     <style>
       *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -28,6 +28,19 @@
       }
 
       #hero canvas { display: block; }
+
+      .hero-subtitle {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 9px;
+        color: #2a2a2a;
+        letter-spacing: 0.3em;
+        text-transform: lowercase;
+        white-space: nowrap;
+        pointer-events: none;
+      }
 
       .scroll-cue {
         position: absolute;
@@ -94,10 +107,32 @@
         margin-top: 24px;
       }
 
-      /* ─── EXPERIMENTS GRID ──────────────────────── */
-      #experiments {
-        padding: 0;
+      #gh-link {
+        display: block;
+        margin-top: 16px;
+        font-size: 9px;
+        color: #333;
+        letter-spacing: 0.2em;
+        text-decoration: none;
+        font-family: monospace;
+        transition: color 0.2s;
       }
+      #gh-link:hover { color: #fff; }
+
+      .also-link {
+        display: block;
+        font-size: 9px;
+        color: #333;
+        letter-spacing: 0.15em;
+        text-decoration: none;
+        font-family: monospace;
+        line-height: 2.2;
+        transition: color 0.2s;
+      }
+      .also-link:hover { color: #fff; }
+
+      /* ─── EXPERIMENTS GRID ──────────────────────── */
+      #experiments { padding: 0; }
 
       .section-header {
         padding: 18px 60px;
@@ -106,14 +141,12 @@
         align-items: center;
         gap: 20px;
       }
-
       .section-header span {
         font-size: 9px;
         color: var(--dim);
         letter-spacing: 0.3em;
         text-transform: uppercase;
       }
-
       .section-header::after {
         content: "";
         flex: 1;
@@ -121,11 +154,17 @@
         background: var(--line);
       }
 
+      /* Grid padrão — 3 colunas */
       .grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 1px;
         background: var(--line);
+      }
+
+      /* Nível 01 — 5 cards em linha única */
+      .grid-level-01 {
+        grid-template-columns: repeat(5, 1fr);
       }
 
       .card {
@@ -148,6 +187,8 @@
         letter-spacing: 0.1em;
         margin-bottom: auto;
         padding-bottom: 20px;
+        position: relative;
+        z-index: 1;
       }
 
       .card-name {
@@ -159,6 +200,8 @@
         line-height: 1;
         margin-bottom: 10px;
         transition: letter-spacing 0.35s;
+        position: relative;
+        z-index: 1;
       }
 
       .card:hover .card-name { letter-spacing: 0.1em; }
@@ -168,9 +211,11 @@
         color: var(--dim);
         letter-spacing: 0.12em;
         line-height: 1.6;
+        position: relative;
+        z-index: 1;
       }
 
-      /* número grande decorativo no fundo */
+      /* número decorativo no fundo */
       .card::before {
         content: attr(data-num);
         position: absolute;
@@ -182,6 +227,7 @@
         line-height: 1;
         pointer-events: none;
         transition: color 0.2s;
+        z-index: 0;
       }
 
       .card:hover::before { color: #151515; }
@@ -191,6 +237,7 @@
 
     <!-- ── hero interativo ── -->
     <div id="hero">
+      <span class="hero-subtitle">type-comportments — série de experimentos tipográficos</span>
       <span class="scroll-cue" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
         scroll ↓
       </span>
@@ -199,23 +246,38 @@
     <!-- ── about ── -->
     <section id="about">
       <div class="about-me">
-        <p class="about-tag">sobre</p>
-        <h2 class="about-name">Seu Nome</h2>
+        <p class="about-tag">sobre o projeto</p>
+        <h2 class="about-name">TIPO SENSÍVEL</h2>
         <p class="about-bio">
-          Designer e explorador de sistemas. Interessado na fronteira entre tipografia, código e comportamento físico.
-          Este projeto nasceu da curiosidade sobre o que acontece quando uma letra deixa de ser signo e vira sistema.
+          Uma série de experimentos em p5.js onde tipografia opera como
+          sistema físico — cada letra com massa, campo e memória.
+          Em vez de animar texto, o projeto investiga o que acontece quando
+          um signo passa a ter comportamento. Um estudo em andamento sobre
+          percepção, código e estética computacional.
         </p>
         <p class="about-year">2025 — em progresso</p>
+        <a href="https://github.com/aviniciussouzas/type-comportments"
+           target="_blank"
+           id="gh-link">
+          github.com/aviniciussouzas/type-comportments ↗
+        </a>
       </div>
       <div class="about-project">
-        <p class="about-tag">typo-comportments</p>
-        <h2 class="about-name">Tipografia<br>como sistema físico</h2>
+        <p class="about-tag">princípios</p>
+        <h2 class="about-name">Letra como<br>sistema físico</h2>
         <p class="about-bio">
-          Série de experimentos em p5.js onde cada forma tipográfica ganha um comportamento —
-          latência, tensão, ruído, erosão. A letra como partícula com massa, memória e campo de força.
-          Cada experimento ensina um conceito de física, matemática ou computação
-          através de interação visual direta.
+          Letra como partícula · Sistema antes de efeito ·
+          Comportamento ≠ animação · Física como linguagem ·
+          Conceito antes de render · Signo com massa
         </p>
+
+        <p class="about-tag" style="margin-top:32px">também por andrê souza</p>
+        <a href="https://github.com/aviniciussouzas/sinal" target="_blank" class="also-link">
+          Sinal — coordenação para times de design ↗
+        </a>
+        <a href="https://[judgment-console-url]" target="_blank" class="also-link">
+          Judgment Console — julgamento criativo como interface ↗
+        </a>
       </div>
     </section>
 
@@ -223,7 +285,7 @@
     <section id="experiments">
 
       <div class="section-header"><span>nível 01 — palavras</span></div>
-      <div class="grid">
+      <div class="grid grid-level-01">
         <a href="/latencia.html" class="card" data-num="01">
           <span class="card-num">01</span>
           <span class="card-name">LATÊNCIA</span>
@@ -247,7 +309,7 @@
         <a href="/eco.html" class="card" data-num="05">
           <span class="card-num">05</span>
           <span class="card-name">ECO</span>
-          <span class="card-concept">rasterização · grid · eco direcional</span>
+          <span class="card-concept">rasterização · grid · eco</span>
         </a>
       </div>
 

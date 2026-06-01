@@ -3,16 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>10 — HALFTONE</title>
+    <title>10 — HALFTONE LED</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { background: #0a0a0a; overflow: hidden; }
       #back { position: fixed; top: 20px; left: 24px; color: #2a2a2a; font-family: monospace; font-size: 12px; text-decoration: none; z-index: 10; }
       #back:hover { color: #fff; }
+      #prev, #next {
+        position: fixed; top: 50%; transform: translateY(-50%);
+        color: #222; font-family: monospace; font-size: 18px;
+        text-decoration: none; z-index: 10; transition: color 0.2s; padding: 8px;
+      }
+      #prev { left: 24px; } #next { right: 24px; }
+      #prev:hover, #next:hover { color: #fff; }
+      #ref {
+        position: fixed; bottom: 20px; right: 24px;
+        font-family: monospace; font-size: 9px; color: #2a2a2a;
+        letter-spacing: 0.15em; line-height: 1.8; text-align: right;
+        pointer-events: none; z-index: 10; transition: color 0.3s;
+      }
+      #ref:hover { color: #666; pointer-events: auto; }
     </style>
   </head>
   <body>
     <a id="back" href="/">← série</a>
+    <a id="prev" href="/lente.html">←</a>
+    <span id="ref">halftone · luz como matriz<br>Josef Albers, Interaction of Color</span>
     <script type="module" src="/src/experiments/halftone.js"></script>
   </body>
 </html>
