@@ -45,3 +45,32 @@ Cada experimento traduz um conceito físico, matemático ou computacional em uma
 ```bash
 npm install
 npm run dev
+```
+
+Depois, abra o endereço indicado pelo terminal no navegador.
+
+Estrutura
+/
+├── index.html
+├── latencia.html
+├── tensao.html
+├── ruido.html
+├── traco.html
+├── eco.html
+├── nevoa.html
+├── constelacao.html
+├── erosao.html
+├── lente.html
+├── halftone.html
+├── src/
+├── public/
+└── vite.config.js
+Status
+
+Projeto em andamento.
+Série de estudos visuais sobre tipografia computacional, interação e sistemas generativos.
+
+Autor
+
+Andrê Vinícius
+Designer investigando a interseção entre sistemas visuais, código, percepção e comportamento.
