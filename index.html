@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typo-comportments</title>
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+      :root {
+        --bg: #0a0a0a;
+        --line: #111;
+        --dim: #1e1e1e;
+        --mid: #333;
+        --text: #fff;
+      }
+
+      html { scroll-behavior: smooth; }
+      body { background: var(--bg); color: var(--text); font-family: monospace; }
+
+      /* ─── HERO ─────────────────────────────────── */
+      #hero {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+        cursor: none;
+      }
+
+      #hero canvas { display: block; }
+
+      .scroll-cue {
+        position: absolute;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 9px;
+        color: #1e1e1e;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s;
+      }
+      .scroll-cue:hover { color: #666; }
+
+      /* ─── ABOUT ─────────────────────────────────── */
+      #about {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .about-me {
+        padding: 52px 60px;
+        border-right: 1px solid var(--line);
+      }
+
+      .about-project {
+        padding: 52px 60px;
+      }
+
+      .about-tag {
+        font-size: 9px;
+        color: var(--dim);
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+
+      .about-name {
+        font-size: 28px;
+        font-family: monospace;
+        font-weight: normal;
+        letter-spacing: 0.04em;
+        color: var(--text);
+        margin-bottom: 16px;
+        line-height: 1.2;
+      }
+
+      .about-bio {
+        font-size: 11px;
+        color: var(--mid);
+        line-height: 1.9;
+        max-width: 380px;
+      }
+
+      .about-year {
+        font-size: 9px;
+        color: var(--dim);
+        letter-spacing: 0.2em;
+        margin-top: 24px;
+      }
+
+      /* ─── EXPERIMENTS GRID ──────────────────────── */
+      #experiments {
+        padding: 0;
+      }
+
+      .section-header {
+        padding: 18px 60px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .section-header span {
+        font-size: 9px;
+        color: var(--dim);
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+      }
+
+      .section-header::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--line);
+      }
+
+      .card {
+        background: var(--bg);
+        padding: 36px 40px 32px;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        min-height: 200px;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.2s;
+      }
+
+      .card:hover { background: #0d0d0d; }
+
+      .card-num {
+        font-size: 11px;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+        margin-bottom: auto;
+        padding-bottom: 20px;
+      }
+
+      .card-name {
+        font-size: 30px;
+        font-family: monospace;
+        font-weight: normal;
+        color: var(--text);
+        letter-spacing: 0.03em;
+        line-height: 1;
+        margin-bottom: 10px;
+        transition: letter-spacing 0.35s;
+      }
+
+      .card:hover .card-name { letter-spacing: 0.1em; }
+
+      .card-concept {
+        font-size: 9px;
+        color: var(--dim);
+        letter-spacing: 0.12em;
+        line-height: 1.6;
+      }
+
+      /* número grande decorativo no fundo */
+      .card::before {
+        content: attr(data-num);
+        position: absolute;
+        top: 16px;
+        right: 24px;
+        font-size: 80px;
+        font-family: monospace;
+        color: var(--line);
+        line-height: 1;
+        pointer-events: none;
+        transition: color 0.2s;
+      }
+
+      .card:hover::before { color: #151515; }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── hero interativo ── -->
+    <div id="hero">
+      <span class="scroll-cue" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+        scroll ↓
+      </span>
+    </div>
+
+    <!-- ── about ── -->
+    <section id="about">
+      <div class="about-me">
+        <p class="about-tag">sobre</p>
+        <h2 class="about-name">Seu Nome</h2>
+        <p class="about-bio">
+          Designer e explorador de sistemas. Interessado na fronteira entre tipografia, código e comportamento físico.
+          Este projeto nasceu da curiosidade sobre o que acontece quando uma letra deixa de ser signo e vira sistema.
+        </p>
+        <p class="about-year">2025 — em progresso</p>
+      </div>
+      <div class="about-project">
+        <p class="about-tag">typo-comportments</p>
+        <h2 class="about-name">Tipografia<br>como sistema físico</h2>
+        <p class="about-bio">
+          Série de experimentos em p5.js onde cada forma tipográfica ganha um comportamento —
+          latência, tensão, ruído, erosão. A letra como partícula com massa, memória e campo de força.
+          Cada experimento ensina um conceito de física, matemática ou computação
+          através de interação visual direta.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── experimentos ── -->
+    <section id="experiments">
+
+      <div class="section-header"><span>nível 01 — palavras</span></div>
+      <div class="grid">
+        <a href="/latencia.html" class="card" data-num="01">
+          <span class="card-num">01</span>
+          <span class="card-name">LATÊNCIA</span>
+          <span class="card-concept">distância · repulsão · campo</span>
+        </a>
+        <a href="/tensao.html" class="card" data-num="02">
+          <span class="card-num">02</span>
+          <span class="card-name">TENSÃO</span>
+          <span class="card-concept">lei de Hooke · mola · oscilação</span>
+        </a>
+        <a href="/ruido.html" class="card" data-num="03">
+          <span class="card-num">03</span>
+          <span class="card-name">RUÍDO</span>
+          <span class="card-concept">Perlin noise · turbulência</span>
+        </a>
+        <a href="/traco.html" class="card" data-num="04">
+          <span class="card-num">04</span>
+          <span class="card-name">TRAÇO</span>
+          <span class="card-concept">contorno bezier · escrita</span>
+        </a>
+        <a href="/eco.html" class="card" data-num="05">
+          <span class="card-num">05</span>
+          <span class="card-name">ECO</span>
+          <span class="card-concept">rasterização · grid · eco direcional</span>
+        </a>
+      </div>
+
+      <div class="section-header"><span>nível 02 — blocos de texto</span></div>
+      <div class="grid">
+        <a href="/nevoa.html" class="card" data-num="06">
+          <span class="card-num">06</span>
+          <span class="card-name">NÉVOA</span>
+          <span class="card-concept">noise como percepção · Mark Fisher</span>
+        </a>
+        <a href="/constelacao.html" class="card" data-num="07">
+          <span class="card-num">07</span>
+          <span class="card-name">CONSTELAÇÃO</span>
+          <span class="card-concept">grafo · proximidade · Teilhard</span>
+        </a>
+        <a href="/erosao.html" class="card" data-num="08">
+          <span class="card-num">08</span>
+          <span class="card-name">EROSÃO</span>
+          <span class="card-concept">vento · impermanência · Blake</span>
+        </a>
+      </div>
+
+      <div class="section-header"><span>nível 03 — forma + texto</span></div>
+      <div class="grid">
+        <a href="/lente.html" class="card" data-num="09">
+          <span class="card-num">09</span>
+          <span class="card-name">LENTE</span>
+          <span class="card-concept">projeção esférica · distorção óptica</span>
+        </a>
+        <a href="/halftone.html" class="card" data-num="10">
+          <span class="card-num">10</span>
+          <span class="card-name">HALFTONE LED</span>
+          <span class="card-concept">LED · luz aditiva · input</span>
+        </a>
+      </div>
+
+    </section>
+
+    <script type="module" src="/src/home.js"></script>
+  </body>
+</html>
