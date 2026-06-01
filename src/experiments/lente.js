@@ -1,90 +1,265 @@
 import p5 from "p5";
-import { collectTextPoints } from "./utils.js";
 import { createAbout } from "../about.js";
 
-// LENTE — distorção óptica por projeção esférica
-// A lente circular segue o cursor. Dentro dela, cada ponto é projetado
-// sobre a superfície de uma esfera virtual: como olhar texto
-// através de uma bola de vidro.
-//
-// Fórmula: dado um ponto (dx, dy) normalizado dentro da lente,
-// o ângulo θ = dist/r × π/2 (de polo a equador da esfera).
-// O raio projetado = r × sin(θ) — empurra pontos centrais pra fora.
-
-const LINES = [
-  "olhar é sempre",
-  "uma hipótese",
-];
-
-const LENS_R = 180;
-const LENS_STRENGTH = 1.4; // > 1 = mais distorção
+// LENTE — instrumento óptico calibrável
+// Texto legível ao fundo.
+// A lente segue o cursor.
+// Scroll calibra raio, ampliação, distorção e expansão do contorno.
 
 let font;
-let pts = [];
+let baseLayer;
+let outlinePoints = [];
+let lensPower = 0.5;
 
-function sphereProject(px, py, cx, cy, r, strength) {
-  let dx = px - cx, dy = py - cy;
-  let dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist >= r || dist === 0) return { x: px, y: py, inside: false };
+const LINES = ["olhar é sempre", "uma hipótese"];
 
-  let t = dist / r;               // 0 no centro, 1 na borda
-  let theta = t * Math.PI * 0.5; // ângulo de polo até equador
-  let projected = r * Math.sin(theta) * strength;
-  let scale = projected / dist;
-
-  return {
-    x: cx + dx * scale,
-    y: cy + dy * scale,
-    inside: true,
-    t,
-  };
-}
+const PARAMS = {
+  lensRadiusMin: 72,
+  lensRadiusMax: 170,
+  magnificationMin: 1.08,
+  magnificationMax: 1.9,
+  distortionMin: 0.02,
+  distortionMax: 0.32,
+  outlineSample: 0.16,
+  outlineExpansionMin: 3,
+  outlineExpansionMax: 16,
+};
 
 new p5((p) => {
   p.setup = async () => {
     p.createCanvas(window.innerWidth, window.innerHeight);
     font = await p.loadFont("/fonts/SpaceGrotesk-Regular.ttf");
-    pts = collectTextPoints(p, font, LINES, 140, 0.2);
+    buildBaseLayer(p);
+    buildOutline(p);
   };
 
   p.draw = () => {
-    p.background(10, 22);
-    p.noStroke();
+    p.background(247, 245, 240);
 
-    let cx = p.mouseX;
-    let cy = p.mouseY;
+    p.image(baseLayer, 0, 0);
 
-    // Linha divisória da lente (círculo sutil)
-    p.noFill();
-    p.stroke(40);
-    p.strokeWeight(0.5);
-    p.circle(cx, cy, LENS_R * 2);
+    const cx = p.mouseX;
+    const cy = p.mouseY;
 
-    p.noStroke();
+    drawLensDistortion(p, cx, cy);
+    drawExpandedOutline(p, cx, cy);
+    drawLensFrame(p, cx, cy);
+    drawTechnicalLabel(p);
+  };
 
-    for (let pt of pts) {
-      let result = sphereProject(pt.x, pt.y, cx, cy, LENS_R, LENS_STRENGTH);
+  p.mouseWheel = (event) => {
+    lensPower += event.delta > 0 ? -0.06 : 0.06;
+    lensPower = p.constrain(lensPower, 0, 1);
+    return false;
+  };
 
-      if (result.inside) {
-        // Dentro da lente: cor e tamanho variam com distorção
-        let distortion = Math.abs(result.x - pt.x) + Math.abs(result.y - pt.y);
-        let r = p.map(distortion, 0, 80, 200, 255);
-        let g = p.map(distortion, 0, 80, 200, 120);
-        let b = p.map(distortion, 0, 80, 255, 80);
-        let size = p.map(result.t, 0, 1, 5, 2);
-        p.fill(r, g, b, 220);
-        p.circle(result.x, result.y, size);
-      } else {
-        // Fora da lente: branco puro, tamanho padrão
-        p.fill(255, 160);
-        p.circle(pt.x, pt.y, 2.5);
-      }
-    }
+  p.mousePressed = () => {
+    lensPower = 0.5;
+  };
+
+  p.windowResized = () => {
+    p.resizeCanvas(window.innerWidth, window.innerHeight);
+    buildBaseLayer(p);
+    buildOutline(p);
   };
 });
 
+function getLensRadius(p) {
+  return p.lerp(PARAMS.lensRadiusMin, PARAMS.lensRadiusMax, lensPower);
+}
+
+function getMagnification(p) {
+  return p.lerp(PARAMS.magnificationMin, PARAMS.magnificationMax, lensPower);
+}
+
+function getDistortion(p) {
+  return p.lerp(PARAMS.distortionMin, PARAMS.distortionMax, lensPower);
+}
+
+function getOutlineExpansion(p) {
+  return p.lerp(
+    PARAMS.outlineExpansionMin,
+    PARAMS.outlineExpansionMax,
+    lensPower
+  );
+}
+
+function buildBaseLayer(p) {
+  baseLayer = p.createGraphics(p.width, p.height);
+  baseLayer.pixelDensity(1);
+  baseLayer.background(247, 245, 240);
+
+  const fontSize = Math.min(p.width * 0.082, 112);
+  const lineHeight = fontSize * 1.08;
+
+  const totalHeight = (LINES.length - 1) * lineHeight;
+  const startY = p.height / 2 - totalHeight / 2;
+
+  baseLayer.textFont(font);
+  baseLayer.textAlign(p.CENTER, p.CENTER);
+  baseLayer.textSize(fontSize);
+  baseLayer.noStroke();
+  baseLayer.fill(15, 15, 15, 205);
+
+  for (let i = 0; i < LINES.length; i++) {
+    baseLayer.text(LINES[i], p.width / 2, startY + i * lineHeight);
+  }
+}
+
+function buildOutline(p) {
+  outlinePoints = [];
+
+  const fontSize = Math.min(p.width * 0.082, 112);
+  const lineHeight = fontSize * 1.08;
+
+  const totalHeight = (LINES.length - 1) * lineHeight;
+  const startY = p.height / 2 - totalHeight / 2;
+
+  p.textFont(font);
+  p.textSize(fontSize);
+
+  for (let i = 0; i < LINES.length; i++) {
+    const line = LINES[i];
+    const bounds = font.textBounds(line, 0, 0, fontSize);
+
+    const x = p.width / 2 - bounds.w / 2;
+    const y = startY + i * lineHeight + bounds.h / 2;
+
+    const pts = font.textToPoints(line, x, y, fontSize, {
+      sampleFactor: PARAMS.outlineSample,
+      simplifyThreshold: 0,
+    });
+
+    outlinePoints.push(...pts);
+  }
+}
+
+function drawLensDistortion(p, cx, cy) {
+  const r = getLensRadius(p);
+  const magnification = getMagnification(p);
+  const distortion = getDistortion(p);
+
+  p.push();
+
+  p.drawingContext.save();
+  p.drawingContext.beginPath();
+  p.drawingContext.arc(cx, cy, r, 0, Math.PI * 2);
+  p.drawingContext.clip();
+
+  p.noStroke();
+  p.fill(247, 245, 240, 235);
+  p.circle(cx, cy, r * 2);
+
+  const slices = 46;
+  const sliceH = (r * 2) / slices;
+
+  for (let i = 0; i < slices; i++) {
+    const sy = cy - r + i * sliceH;
+    const dy = sy;
+
+    const normalized = p.map(i, 0, slices - 1, -1, 1);
+
+    const wave =
+      Math.sin(normalized * Math.PI) *
+      distortion *
+      r *
+      p.noise(i * 0.1, p.frameCount * 0.01);
+
+    const sx = cx - r / magnification - wave;
+    const sw = (r * 2) / magnification;
+    const sh = sliceH / magnification;
+
+    const dx = cx - r;
+    const dw = r * 2;
+
+    p.image(
+      baseLayer,
+      dx,
+      dy,
+      dw,
+      sliceH + 1,
+      sx,
+      sy - sh / 2,
+      sw,
+      sh + 1
+    );
+  }
+
+  p.drawingContext.restore();
+  p.pop();
+}
+
+function drawExpandedOutline(p, cx, cy) {
+  const r = getLensRadius(p);
+  const expansion = getOutlineExpansion(p);
+
+  p.noFill();
+  p.stroke(15, 15, 15, 90);
+  p.strokeWeight(0.7);
+
+  for (const pt of outlinePoints) {
+    const dx = pt.x - cx;
+    const dy = pt.y - cy;
+    const d = Math.sqrt(dx * dx + dy * dy);
+
+    if (d < r && d > 0.001) {
+      const t = 1 - d / r;
+      const ex = pt.x + (dx / d) * expansion * t;
+      const ey = pt.y + (dy / d) * expansion * t;
+
+      p.point(ex, ey);
+    }
+  }
+}
+
+function drawLensFrame(p, cx, cy) {
+  const r = getLensRadius(p);
+
+  p.noFill();
+
+  p.stroke(15, 15, 15, 34);
+  p.strokeWeight(1);
+  p.circle(cx, cy, r * 2);
+
+  p.stroke(15, 15, 15, 95);
+  p.strokeWeight(0.8);
+  p.circle(cx, cy, r * 2 + 8);
+
+  p.stroke(15, 15, 15, 70);
+  p.line(cx - r - 14, cy, cx - r + 12, cy);
+  p.line(cx + r - 12, cy, cx + r + 14, cy);
+  p.line(cx, cy - r - 14, cx, cy - r + 12);
+  p.line(cx, cy + r - 12, cx, cy + r + 14);
+
+  p.noStroke();
+  p.fill(15, 15, 15, 120);
+  p.textFont(font);
+  p.textSize(11);
+  p.textAlign(p.LEFT, p.TOP);
+  p.text(`r ${Math.round(r)}px`, cx + r + 18, cy - 18);
+  p.text(`p ${lensPower.toFixed(2)}`, cx + r + 18, cy - 2);
+}
+
+function drawTechnicalLabel(p) {
+  p.noStroke();
+  p.fill(20, 20, 20, 100);
+  p.textFont(font);
+  p.textSize(12);
+  p.textAlign(p.LEFT, p.BOTTOM);
+
+  p.text(
+    `LENTE · scroll calibra óptica · power ${lensPower.toFixed(
+      2
+    )} · click reseta`,
+    24,
+    p.height - 24
+  );
+}
+
 createAbout({
   title: "LENTE",
-  behavior: "A lente circular segue o cursor. Dentro dela, cada ponto do texto é projetado sobre a superfície de uma esfera virtual — como ver letras através de uma bola de vidro. A cor revela a intensidade da distorção.",
-  concept: "projeção esférica · distorção barrel · óptica · refração",
+  behavior:
+    "O texto permanece legível como camada base. Uma lente acompanha o cursor e amplia a área observada por faixas horizontais. O scroll calibra raio, ampliação, distorção e expansão do contorno; o clique retorna ao estado médio.",
+  concept:
+    "lente · ampliação · distorção óptica · calibração · observação",
 });

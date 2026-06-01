@@ -4,96 +4,175 @@ import { createAbout } from "../about.js";
 let font;
 let particles = [];
 
+const TEXT_LINES = [
+  "it's all about collecting",
+  "different things in your spirit,",
+  "and then they release when",
+  "they feel the time to.",
+];
+
 class Particle {
   constructor(p, x, y) {
     this.home = { x, y };
-    this.x = x;
-    this.y = y;
+    this.x = x + p.random(-1, 1);
+    this.y = y + p.random(-1, 1);
     this.vx = 0;
     this.vy = 0;
+    this.mass = p.random(0.8, 1.2);
+    this.phase = p.random(1000);
   }
 
   update(p) {
-    // Lei de Hooke: F = -k * deslocamento
-    const k = 0.06;
+    const k = 0.048;
+
     let fx = (this.home.x - this.x) * k;
     let fy = (this.home.y - this.y) * k;
 
-    let dx = this.x - p.mouseX;
-    let dy = this.y - p.mouseY;
-    let d = Math.sqrt(dx * dx + dy * dy);
-    if (d < 130 && d > 0) {
-      let repel = p.map(d, 0, 130, 9, 0);
+    const tremor = p.noise(this.phase, p.frameCount * 0.015) - 0.5;
+    fx += tremor * 0.05;
+    fy += tremor * 0.05;
+
+    const dx = this.x - p.mouseX;
+    const dy = this.y - p.mouseY;
+    const d = Math.sqrt(dx * dx + dy * dy);
+
+    if (d < 135 && d > 0.001) {
+      const repel = p.map(d, 0, 135, 5.8, 0);
       fx += (dx / d) * repel;
       fy += (dy / d) * repel;
     }
 
-    // Amortecimento
-    this.vx = (this.vx + fx) * 0.87;
-    this.vy = (this.vy + fy) * 0.87;
+    this.vx = (this.vx + fx / this.mass) * 0.88;
+    this.vy = (this.vy + fy / this.mass) * 0.88;
+
     this.x += this.vx;
     this.y += this.vy;
   }
 
+  drawSpring(p) {
+    const dx = this.x - this.home.x;
+    const dy = this.y - this.home.y;
+    const displacement = Math.sqrt(dx * dx + dy * dy);
+
+    if (displacement < 8) return;
+
+    const alpha = p.map(displacement, 8, 70, 0, 38, true);
+
+    p.stroke(20, 20, 20, alpha);
+    p.strokeWeight(0.28);
+    p.line(this.home.x, this.home.y, this.x, this.y);
+  }
+
   draw(p) {
-    let dx = this.x - this.home.x;
-    let dy = this.y - this.home.y;
-    let displacement = Math.sqrt(dx * dx + dy * dy);
+    const dx = this.x - this.home.x;
+    const dy = this.y - this.home.y;
+    const displacement = Math.sqrt(dx * dx + dy * dy);
 
-    let r = p.map(displacement, 0, 80, 80, 255);
-    let g = p.map(displacement, 0, 80, 180, 60);
-    let b = p.map(displacement, 0, 80, 255, 80);
-    let size = p.map(displacement, 0, 80, 2, 5);
+    const alpha = p.map(displacement, 0, 70, 165, 255, true);
+    const size = p.map(displacement, 0, 70, 1.35, 3.1, true);
 
-    p.fill(r, g, b);
+    p.noStroke();
+    p.fill(15, 15, 15, alpha);
     p.circle(this.x, this.y, size);
   }
+}
+
+function createTypographicMass(p) {
+  particles = [];
+
+  const marginX = p.width * 0.08;
+  const maxTextWidth = p.width - marginX * 2;
+
+  const fontSize = Math.min(p.width * 0.055, 82);
+  const lineHeight = fontSize * 1.18;
+
+  const totalHeight = (TEXT_LINES.length - 1) * lineHeight;
+  const startY = p.height / 2 - totalHeight / 2;
+
+  p.textFont(font);
+  p.textSize(fontSize);
+
+  TEXT_LINES.forEach((line, lineIndex) => {
+    let size = fontSize;
+
+    p.textSize(size);
+    while (p.textWidth(line) > maxTextWidth && size > 26) {
+      size *= 0.96;
+      p.textSize(size);
+    }
+
+    const bounds = font.textBounds(line, 0, 0, size);
+    const x = p.width / 2 - bounds.w / 2;
+    const y = startY + lineIndex * lineHeight;
+
+    const pts = font.textToPoints(line, x, y, size, {
+      sampleFactor: 0.22,
+      simplifyThreshold: 0,
+    });
+
+    for (const pt of pts) {
+      particles.push(new Particle(p, pt.x, pt.y));
+    }
+  });
 }
 
 new p5((p) => {
   p.setup = async () => {
     p.createCanvas(window.innerWidth, window.innerHeight);
-
     font = await p.loadFont("/fonts/SpaceGrotesk-Regular.ttf");
-
-    let bounds = font.textBounds("TENSÃO", 0, 0, 220);
-    let x = (p.width - bounds.w) / 2;
-    let y = (p.height + bounds.h) / 2;
-
-    let pts = font.textToPoints("it's all about collecting different things in your spirit, and then they release when they feel the time to.", x, y, 420, {
-      sampleFactor: 0.2,
-    });
-
-    for (let pt of pts) {
-      particles.push(new Particle(p, pt.x, pt.y));
-    }
+    createTypographicMass(p);
   };
 
   p.draw = () => {
-    p.background(10, 18);
-    p.noStroke();
-    for (let particle of particles) {
+    p.background(247, 245, 240);
+
+    for (const particle of particles) {
       particle.update(p);
+      particle.drawSpring(p);
+    }
+
+    for (const particle of particles) {
       particle.draw(p);
     }
+
+    p.noStroke();
+    p.fill(20, 20, 20, 115);
+    p.textFont(font);
+    p.textSize(12);
+    p.textAlign(p.LEFT, p.BOTTOM);
+    p.text(
+      "TENSÃO · Hooke field · elastic return · damped oscillation",
+      24,
+      p.height - 24
+    );
   };
 
   p.mousePressed = () => {
-    for (let particle of particles) {
-      let dx = particle.x - p.mouseX;
-      let dy = particle.y - p.mouseY;
-      let d = Math.sqrt(dx * dx + dy * dy);
-      if (d < 250 && d > 0) {
-        let burst = p.map(d, 0, 250, 18, 2);
+    for (const particle of particles) {
+      const dx = particle.x - p.mouseX;
+      const dy = particle.y - p.mouseY;
+      const d = Math.sqrt(dx * dx + dy * dy);
+
+      if (d < 260 && d > 0.001) {
+        const burst = p.map(d, 0, 260, 13, 1.4);
         particle.vx += (dx / d) * burst;
         particle.vy += (dy / d) * burst;
       }
     }
   };
+
+  p.windowResized = () => {
+    p.resizeCanvas(window.innerWidth, window.innerHeight);
+    createTypographicMass(p);
+  };
 });
 
 createAbout({
   title: "TENSÃO",
-  behavior: "Cada ponto tem massa, velocidade e uma mola que o puxa de volta ao lar. Lei de Hooke: F = −k·x. O amortecimento drena energia a cada frame, criando oscilação sub-amortecida. Click aplica um impulso explosivo.",
-  concept: "lei de Hooke · mola · amortecimento · oscilação",
+  behavior:
+    "A frase é convertida em uma mancha tipográfica elástica. Cada ponto possui uma posição de repouso e é puxado de volta por uma mola invisível. O mouse cria repulsão; o clique aplica impulso.",
+  concept:
+    "lei de Hooke · mola · amortecimento · oscilação · mancha tipográfica",
+  quote:
+    "it's all about collecting different things in your spirit, and then they release when they feel the time to.",
 });

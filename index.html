@@ -344,23 +344,48 @@ body {
   font-style: italic;
 }
 
-/* PREVIEW WINDOW */
+/* PREVIEW WINDOW — editorial paper style */
 
 .experiment-preview {
   flex: 1;
   min-height: 100px;
   margin: 4px 0 14px;
   position: relative;
-  background: #0d0c0a;
+  background: #f2efe8;
   overflow: hidden;
+  border: 1px solid rgba(17, 17, 17, 0.16);
+}
+
+.experiment-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(17, 17, 17, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.035) 1px, transparent 1px);
+  background-size: 18px 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.experiment-preview::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* canvas injetado pelo cardBehaviors.js */
 .experiment-preview canvas {
   display: block;
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: multiply;
 }
 
 /* PARAMETERS */
@@ -525,7 +550,7 @@ body {
           <span class="catalog-version-label">Versão</span>
           <div>
             <p class="catalog-version">V.01</p>
-            <p class="catalog-version-sub">10 experimentos · 3 níveis</p>
+            <p class="catalog-version-sub">11 experimentos · 3 níveis</p>
           </div>
         </div>
 
@@ -736,7 +761,7 @@ body {
         <!-- NÍVEL III -->
         <div class="level-header">
           <span class="level-header-label">Nível III — Forma</span>
-          <span class="level-header-count">09–10</span>
+          <span class="level-header-count">09–11</span>
         </div>
 
         <!-- 09 LENTE -->
@@ -755,18 +780,34 @@ body {
           <span class="card-link">ABRIR →</span>
         </a>
 
-        <!-- 10 HALFTONE -->
+        <!-- 10 RETÍCULA -->
         <a class="experiment-card" href="/halftone.html">
           <div class="experiment-heading">
             <span class="experiment-number">10</span>
-            <span class="experiment-title">Halftone LED</span>
+            <span class="experiment-title">Retícula</span>
           </div>
-          <p class="experiment-description">Cada letra é uma tela feita de luz.</p>
-          <div class="experiment-preview entry-preview" data-num="10"></div>
+          <p class="experiment-description">A letra observada como matriz, grão e impressão.</p>
+          <div class="experiment-preview entry-preview paper-preview" data-num="10"></div>
           <ul class="param-list">
-            <li><span class="pk">grade</span> 11 px</li>
-            <li><span class="pk">camadas</span> 3×</li>
-            <li><span class="pk">cor</span> âmbar 255/185/40</li>
+            <li><span class="pk">grade</span> 5–16 px</li>
+            <li><span class="pk">matriz</span> halftone</li>
+            <li><span class="pk">lente</span> inspeção</li>
+          </ul>
+          <span class="card-link">ABRIR →</span>
+        </a>
+
+        <!-- 11 ESPECIMEN -->
+        <a class="experiment-card no-border-right" href="/specimen.html">
+          <div class="experiment-heading">
+            <span class="experiment-number">11</span>
+            <span class="experiment-title">Especimen</span>
+          </div>
+          <p class="experiment-description">A letra observando a si mesma como sistema.</p>
+          <div class="experiment-preview entry-preview paper-preview" data-num="11"></div>
+          <ul class="param-list">
+            <li><span class="pk">tracking</span> variável</li>
+            <li><span class="pk">escala</span> responsiva</li>
+            <li><span class="pk">anatomia</span> tipográfica</li>
           </ul>
           <span class="card-link">ABRIR →</span>
         </a>

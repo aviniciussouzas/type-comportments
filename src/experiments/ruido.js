@@ -1,83 +1,161 @@
 import p5 from "p5";
 import { createAbout } from "../about.js";
 
-// RUÍDO — Campo de fluxo Perlin
-// Conceito: turbulência, campos vetoriais, como o ruído Perlin simula natureza
-// Partículas nascem dentro das letras e seguem o campo de ruído
-// Com o tempo saem da forma, revelando que a ordem é temporária
+// RUÍDO — legibilidade ↔ interferência
+// A frase permanece como texto, mas sofre instabilidade:
+// deslocamento, camadas desalinhadas, cortes horizontais e ruído ótico.
 
 let font;
-let particles = [];
-let homePoints = [];
 
-class FlowParticle {
-  constructor(p, x, y) {
-    this.home = { x, y };
-    this.x = x + p.random(-1, 1);
-    this.y = y + p.random(-1, 1);
-    this.age = p.random(0, 200);
-    this.maxAge = p.random(120, 300);
-  }
+const TEXT_LINES = [
+  "A palavra é minha",
+  "quarta dimensão.",
+  "Clarice Lispector",
+];
 
-  update(p) {
-    this.age++;
-
-    // Campo de fluxo Perlin: ângulo varia suavemente no espaço
-    let noiseScale = 0.003;
-    let angle = p.noise(this.x * noiseScale, this.y * noiseScale, p.frameCount * 0.004) * p.TWO_PI * 2;
-    let speed = 0.8;
-    this.x += Math.cos(angle) * speed;
-    this.y += Math.sin(angle) * speed;
-
-    // Reinicia ao lar quando envelhece
-    if (this.age > this.maxAge) {
-      this.x = this.home.x + p.random(-2, 2);
-      this.y = this.home.y + p.random(-2, 2);
-      this.age = 0;
-    }
-  }
-
-  draw(p) {
-    let life = p.map(this.age, 0, this.maxAge, 1, 0);
-    p.fill(200, 220, 255, life * 180);
-    p.circle(this.x, this.y, 2);
-  }
-}
+let interference = 0;
 
 new p5((p) => {
   p.setup = async () => {
     p.createCanvas(window.innerWidth, window.innerHeight);
-
     font = await p.loadFont("/fonts/SpaceGrotesk-Regular.ttf");
-
-    let bounds = font.textBounds("RUÍDO", 0, 0, 220);
-    let x = (p.width - bounds.w) / 2;
-    let y = (p.height + bounds.h) / 2;
-
-    homePoints = font.textToPoints("it's all about collecting different things in your spirit, and then they release when they feel the time to.", x, y, 420, {
-      sampleFactor: 0.2,
-    });
-
-    // Multiplica partículas por ponto para densidade visual
-    for (let pt of homePoints) {
-      for (let i = 0; i < 3; i++) {
-        particles.push(new FlowParticle(p, pt.x, pt.y));
-      }
-    }
+    p.textFont(font);
   };
 
   p.draw = () => {
-    p.background(10, 12);
-    p.noStroke();
-    for (let particle of particles) {
-      particle.update(p);
-      particle.draw(p);
-    }
+    p.background(247, 245, 240);
+
+    const mouseDist = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2);
+    const mouseForce = p.map(mouseDist, 0, p.width / 2, 1, 0, true);
+
+    interference = p.lerp(interference, mouseForce, 0.06);
+
+    drawTypographicBlock(p);
+    drawInterferenceLines(p);
+    drawTechnicalLabel(p);
+  };
+
+  p.mousePressed = () => {
+    interference = 0;
+  };
+
+  p.windowResized = () => {
+    p.resizeCanvas(window.innerWidth, window.innerHeight);
   };
 });
 
+function drawTypographicBlock(p) {
+  const fontSize = Math.min(p.width * 0.062, 84);
+  const lineHeight = fontSize * 1.35;
+
+  const totalHeight = (TEXT_LINES.length - 1) * lineHeight;
+  const startY = p.height / 2 - totalHeight / 2;
+
+  p.textAlign(p.CENTER, p.CENTER);
+  p.textFont(font);
+  p.textSize(fontSize);
+
+  for (let i = 0; i < TEXT_LINES.length; i++) {
+    const line = TEXT_LINES[i];
+    const y = startY + i * lineHeight;
+
+    const noiseA = p.noise(i * 10, p.frameCount * 0.012);
+    const noiseB = p.noise(i * 20 + 100, p.frameCount * 0.018);
+
+    const shiftX = p.map(noiseA, 0, 1, -18, 18) * interference;
+    const shiftY = p.map(noiseB, 0, 1, -5, 5) * interference;
+
+    // camada principal: legibilidade
+    p.noStroke();
+    p.fill(15, 15, 15, 235);
+    p.text(line, p.width / 2, y);
+
+    // camada interferente: desalinhamento horizontal
+    p.fill(15, 15, 15, 55 * interference);
+    p.text(line, p.width / 2 + shiftX, y + shiftY);
+
+    // camada oposta: eco de leitura
+    p.fill(15, 15, 15, 35 * interference);
+    p.text(line, p.width / 2 - shiftX * 0.6, y - shiftY * 0.6);
+
+    // cortes horizontais
+    drawSlicedText(p, line, p.width / 2, y, fontSize, interference, i);
+  }
+}
+
+function drawSlicedText(p, line, x, y, size, amount, lineIndex) {
+  const slices = 7;
+
+  p.textFont(font);
+  p.textSize(size);
+  p.textAlign(p.CENTER, p.CENTER);
+
+  const bounds = font.textBounds(line, x, y, size);
+  const sliceH = bounds.h / slices;
+
+  for (let s = 0; s < slices; s++) {
+    const n = p.noise(lineIndex * 50, s * 10, p.frameCount * 0.018);
+    const offset = p.map(n, 0, 1, -28, 28) * amount;
+
+    if (amount < 0.08) continue;
+
+    p.push();
+
+    // clip por faixa horizontal
+    p.drawingContext.save();
+    p.drawingContext.beginPath();
+    p.drawingContext.rect(
+      0,
+      y - bounds.h / 2 + s * sliceH,
+      p.width,
+      sliceH * 0.72
+    );
+    p.drawingContext.clip();
+
+    p.fill(15, 15, 15, 55 * amount);
+    p.noStroke();
+    p.text(line, x + offset, y);
+
+    p.drawingContext.restore();
+    p.pop();
+  }
+}
+
+function drawInterferenceLines(p) {
+  const count = 18;
+
+  p.strokeWeight(1);
+
+  for (let i = 0; i < count; i++) {
+    const y = p.map(i, 0, count - 1, p.height * 0.18, p.height * 0.82);
+    const n = p.noise(i * 3, p.frameCount * 0.01);
+    const alpha = p.map(n, 0, 1, 0, 38) * interference;
+
+    p.stroke(15, 15, 15, alpha);
+    p.line(p.width * 0.08, y, p.width * 0.92, y);
+  }
+}
+
+function drawTechnicalLabel(p) {
+  p.noStroke();
+  p.fill(20, 20, 20, 115);
+  p.textFont(font);
+  p.textSize(12);
+  p.textAlign(p.LEFT, p.BOTTOM);
+
+  p.text(
+    "RUÍDO · legibilidade ↔ interferência · mouse intensifica · click reseta",
+    24,
+    p.height - 24
+  );
+}
+
 createAbout({
   title: "RUÍDO",
-  behavior: "Partículas nascem dentro das letras e derivam num campo de ruído Perlin. O ruído é suave e contínuo no espaço — dois pontos próximos têm ângulos de vento próximos. Quando envelhecem, retornam ao lar.",
-  concept: "Perlin noise · campo vetorial · turbulência · vida útil",
+  behavior:
+    "A frase permanece legível, mas sofre interferência visual: camadas desalinhadas, cortes horizontais e ruído ótico. A presença do mouse intensifica a instabilidade; o clique reduz a interferência.",
+  concept:
+    "legibilidade · interferência · ruído ótico · deslocamento · instabilidade",
+  quote:
+    "Liberdade é pouco. O que eu desejo ainda não tem nome.<br>— Clarice Lispector",
 });
