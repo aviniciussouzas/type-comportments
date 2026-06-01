@@ -1,352 +1,596 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TIPO SENSÍVEL</title>
+    <title>TIPO SENSÍVEL — Catálogo de Experimentos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet" />
     <style>
       *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
       :root {
-        --bg: #0a0a0a;
-        --line: #111;
-        --dim: #1e1e1e;
-        --mid: #333;
-        --text: #fff;
+        --paper:    #F4F2EC;
+        --paper-2:  #EDEAE1;
+        --rule:     #D8D4C8;
+        --rule-2:   #C8C4B8;
+        --ink:      #1A1816;
+        --ink-2:    #3A3630;
+        --ink-3:    #6A6560;
+        --ink-4:    #A09C94;
+        --mono:     'IBM Plex Mono', monospace;
+        --sans:     'Space Grotesk', system-ui, sans-serif;
       }
 
-      html { scroll-behavior: smooth; }
-      body { background: var(--bg); color: var(--text); font-family: monospace; }
-
-      /* ─── HERO ─────────────────────────────────── */
-      #hero {
-        width: 100vw;
-        height: 100vh;
-        position: relative;
-        overflow: hidden;
-        cursor: none;
-      }
-
-      #hero canvas { display: block; }
-
-      .hero-subtitle {
-        position: absolute;
-        bottom: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 9px;
-        color: #2a2a2a;
-        letter-spacing: 0.3em;
-        text-transform: lowercase;
-        white-space: nowrap;
-        pointer-events: none;
-      }
-
-      .scroll-cue {
-        position: absolute;
-        bottom: 32px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 9px;
-        color: #1e1e1e;
-        letter-spacing: 0.35em;
-        text-transform: uppercase;
-        cursor: pointer;
-        user-select: none;
-        transition: color 0.2s;
-      }
-      .scroll-cue:hover { color: #666; }
-
-      /* ─── ABOUT ─────────────────────────────────── */
-      #about {
+      html { background: var(--paper); color: var(--ink); }
+      body {
+        font-family: var(--sans);
+        font-size: 13px;
+        line-height: 1.6;
+        min-height: 100vh;
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0;
-        border-top: 1px solid var(--line);
-        border-bottom: 1px solid var(--line);
+        grid-template-rows: auto 1fr auto;
+        grid-template-columns: 1fr;
       }
 
-      .about-me {
-        padding: 52px 60px;
-        border-right: 1px solid var(--line);
+      /* ── HEADER ─────────────────────────────────────────────── */
+      .site-header {
+        border-bottom: 1px solid var(--rule-2);
+        padding: 28px 40px 24px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: end;
+        gap: 24px;
       }
 
-      .about-project {
-        padding: 52px 60px;
-      }
-
-      .about-tag {
-        font-size: 9px;
-        color: var(--dim);
+      .header-meta {
+        font-family: var(--mono);
+        font-size: 8px;
         letter-spacing: 0.3em;
         text-transform: uppercase;
-        margin-bottom: 20px;
-      }
-
-      .about-name {
-        font-size: 28px;
-        font-family: monospace;
-        font-weight: normal;
-        letter-spacing: 0.04em;
-        color: var(--text);
-        margin-bottom: 16px;
-        line-height: 1.2;
-      }
-
-      .about-bio {
-        font-size: 11px;
-        color: var(--mid);
-        line-height: 1.9;
-        max-width: 380px;
-      }
-
-      .about-year {
-        font-size: 9px;
-        color: var(--dim);
-        letter-spacing: 0.2em;
-        margin-top: 24px;
-      }
-
-      #gh-link {
-        display: block;
-        margin-top: 16px;
-        font-size: 9px;
-        color: #333;
-        letter-spacing: 0.2em;
-        text-decoration: none;
-        font-family: monospace;
-        transition: color 0.2s;
-      }
-      #gh-link:hover { color: #fff; }
-
-      .also-link {
-        display: block;
-        font-size: 9px;
-        color: #333;
-        letter-spacing: 0.15em;
-        text-decoration: none;
-        font-family: monospace;
-        line-height: 2.2;
-        transition: color 0.2s;
-      }
-      .also-link:hover { color: #fff; }
-
-      /* ─── EXPERIMENTS GRID ──────────────────────── */
-      #experiments { padding: 0; }
-
-      .section-header {
-        padding: 18px 60px;
-        border-bottom: 1px solid var(--line);
+        color: var(--ink-4);
+        margin-bottom: 10px;
         display: flex;
-        align-items: center;
-        gap: 20px;
+        gap: 24px;
       }
-      .section-header span {
+      .site-title {
+        font-size: 28px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--ink);
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+      .site-subtitle {
+        font-family: var(--mono);
         font-size: 9px;
-        color: var(--dim);
-        letter-spacing: 0.3em;
+        letter-spacing: 0.18em;
+        color: var(--ink-3);
         text-transform: uppercase;
+        font-weight: 300;
       }
-      .section-header::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: var(--line);
+      .version-tag {
+        font-family: var(--mono);
+        font-size: 9px;
+        color: var(--ink-4);
+        letter-spacing: 0.2em;
+        border: 1px solid var(--rule);
+        padding: 4px 8px;
+        display: inline-block;
       }
 
-      /* Grid padrão — 3 colunas */
-      .grid {
+      /* ── BODY LAYOUT ─────────────────────────────────────────── */
+      .site-body {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1px;
-        background: var(--line);
+        grid-template-columns: 220px 1fr;
+        align-items: start;
       }
 
-      /* Nível 01 — 5 cards em linha única */
-      .grid-level-01 {
-        grid-template-columns: repeat(5, 1fr);
-      }
-
-      .card {
-        background: var(--bg);
-        padding: 36px 40px 32px;
-        text-decoration: none;
+      /* ── SIDEBAR ─────────────────────────────────────────────── */
+      .sidebar {
+        border-right: 1px solid var(--rule);
+        padding: 32px 24px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
-        min-height: 200px;
-        position: relative;
-        overflow: hidden;
-        transition: background 0.2s;
+        gap: 32px;
       }
 
-      .card:hover { background: #0d0d0d; }
-
-      .card-num {
+      .sidebar-label {
+        font-family: var(--mono);
+        font-size: 7.5px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--rule);
+        display: block;
+      }
+      .sidebar-body {
         font-size: 11px;
-        color: var(--dim);
-        letter-spacing: 0.1em;
-        margin-bottom: auto;
-        padding-bottom: 20px;
-        position: relative;
-        z-index: 1;
+        color: var(--ink-3);
+        line-height: 1.8;
+        font-weight: 400;
       }
 
-      .card-name {
-        font-size: 30px;
-        font-family: monospace;
-        font-weight: normal;
-        color: var(--text);
-        letter-spacing: 0.03em;
-        line-height: 1;
-        margin-bottom: 10px;
-        transition: letter-spacing 0.35s;
-        position: relative;
-        z-index: 1;
+      .sys-table { width: 100%; border-collapse: collapse; }
+      .sys-table td {
+        font-family: var(--mono);
+        font-size: 8.5px;
+        padding: 4px 0;
+        vertical-align: top;
+        border-bottom: 1px solid var(--rule);
+        color: var(--ink-3);
+      }
+      .sys-table td:first-child {
+        color: var(--ink-4);
+        width: 50%;
+        padding-right: 8px;
+        letter-spacing: 0.08em;
+      }
+      .sys-table tr:last-child td { border-bottom: none; }
+
+      .levels-list { list-style: none; }
+      .levels-list li {
+        font-family: var(--mono);
+        font-size: 8.5px;
+        color: var(--ink-3);
+        padding: 5px 0;
+        border-bottom: 1px solid var(--rule);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .levels-list li:last-child { border-bottom: none; }
+      .levels-list .lv-count {
+        font-size: 7px;
+        color: var(--ink-4);
+        letter-spacing: 0.15em;
       }
 
-      .card:hover .card-name { letter-spacing: 0.1em; }
+      /* ── CATALOG ─────────────────────────────────────────────── */
+      .catalog { padding: 0; }
 
-      .card-concept {
-        font-size: 9px;
-        color: var(--dim);
-        letter-spacing: 0.12em;
-        line-height: 1.6;
-        position: relative;
-        z-index: 1;
+      .catalog-header {
+        padding: 20px 40px;
+        border-bottom: 1px solid var(--rule);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .catalog-header-label {
+        font-family: var(--mono);
+        font-size: 8px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+      }
+      .catalog-count {
+        font-family: var(--mono);
+        font-size: 8px;
+        color: var(--ink-4);
+        letter-spacing: 0.15em;
       }
 
-      /* número decorativo no fundo */
-      .card::before {
-        content: attr(data-num);
+      /* ── ENTRY ───────────────────────────────────────────────── */
+      .entry {
+        border-bottom: 1px solid var(--rule);
+        display: grid;
+        grid-template-columns: 56px 1fr 220px;
+        min-height: 128px;
+        transition: background 0.15s;
+      }
+      .entry:hover { background: var(--paper-2); }
+      .entry:last-child { border-bottom: none; }
+
+      .entry-num {
+        border-right: 1px solid var(--rule);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 20px 0 0;
+      }
+      .entry-num span {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--ink-4);
+        letter-spacing: 0.15em;
+      }
+
+      .entry-body {
+        padding: 20px 28px 20px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .entry-level {
+        font-family: var(--mono);
+        font-size: 7.5px;
+        letter-spacing: 0.25em;
+        color: var(--ink-4);
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .entry-title {
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        color: var(--ink);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+      .entry-tagline {
+        font-size: 11px;
+        color: var(--ink-3);
+        line-height: 1.65;
+        font-style: italic;
+        font-weight: 300;
+      }
+
+      .entry-params {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 16px;
+        margin-top: 8px;
+      }
+      .entry-param {
+        font-family: var(--mono);
+        font-size: 8px;
+        color: var(--ink-4);
+        letter-spacing: 0.08em;
+      }
+      .entry-param em { color: var(--ink-3); font-style: normal; }
+
+      .entry-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--mono);
+        font-size: 8px;
+        color: var(--ink-3);
+        text-decoration: none;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-top: 10px;
+        border: 1px solid var(--rule);
+        padding: 5px 10px;
+        transition: all 0.15s;
+        align-self: flex-start;
+      }
+      .entry-link:hover { border-color: var(--ink-3); color: var(--ink); }
+
+      .entry-preview-col {
+        border-left: 1px solid var(--rule);
+        position: relative;
+      }
+      .entry-preview {
         position: absolute;
-        top: 16px;
-        right: 24px;
-        font-size: 80px;
-        font-family: monospace;
-        color: var(--line);
-        line-height: 1;
-        pointer-events: none;
-        transition: color 0.2s;
-        z-index: 0;
+        inset: 0;
+        background: #0F0E0C;
+        overflow: hidden;
       }
 
-      .card:hover::before { color: #151515; }
+      /* ── FOOTER ──────────────────────────────────────────────── */
+      .site-footer {
+        border-top: 1px solid var(--rule);
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .footer-copy {
+        font-family: var(--mono);
+        font-size: 8px;
+        color: var(--ink-4);
+        letter-spacing: 0.15em;
+      }
+      .footer-link {
+        font-family: var(--mono);
+        font-size: 8px;
+        color: var(--ink-4);
+        text-decoration: none;
+        letter-spacing: 0.15em;
+        transition: color 0.15s;
+      }
+      .footer-link:hover { color: var(--ink); }
+
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: var(--paper); }
+      ::-webkit-scrollbar-thumb { background: var(--rule-2); }
     </style>
   </head>
   <body>
 
-    <!-- ── hero interativo ── -->
-    <div id="hero">
-      <span class="hero-subtitle">type-comportments — série de experimentos tipográficos</span>
-      <span class="scroll-cue" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
-        scroll ↓
-      </span>
+    <header class="site-header">
+      <div class="header-left">
+        <div class="header-meta">
+          <span>Pesquisa Visual Computacional</span>
+          <span>2024–2025</span>
+        </div>
+        <h1 class="site-title">TIPO SENSÍVEL</h1>
+        <p class="site-subtitle">Série de estudos sobre comportamento da linguagem em ambientes computacionais</p>
+      </div>
+      <div class="header-right">
+        <span class="version-tag">V.01 — 10 experimentos</span>
+      </div>
+    </header>
+
+    <div class="site-body">
+
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <span class="sidebar-label">Sobre</span>
+          <p class="sidebar-body">
+            Investigação sobre a materialidade da letra em sistemas computacionais —
+            como a tipografia se comporta sob física, campo e ruído.
+            Cada experimento isola uma variável.
+          </p>
+        </div>
+
+        <div class="sidebar-section">
+          <span class="sidebar-label">Sistema</span>
+          <table class="sys-table">
+            <tr><td>Plataforma</td><td>Web / Canvas 2D</td></tr>
+            <tr><td>Renderização</td><td>p5.js v2</td></tr>
+            <tr><td>Tipografia</td><td>textToPoints()</td></tr>
+            <tr><td>Input</td><td>Mouse / Teclado</td></tr>
+            <tr><td>Linguagem</td><td>JavaScript ES2023</td></tr>
+            <tr><td>Build</td><td>Vite 5</td></tr>
+          </table>
+        </div>
+
+        <div class="sidebar-section">
+          <span class="sidebar-label">Níveis</span>
+          <ul class="levels-list">
+            <li><span>Nível I — Partícula</span><span class="lv-count">04 exp.</span></li>
+            <li><span>Nível II — Campo</span><span class="lv-count">04 exp.</span></li>
+            <li><span>Nível III — Forma</span><span class="lv-count">02 exp.</span></li>
+          </ul>
+        </div>
+      </aside>
+
+      <main class="catalog">
+        <div class="catalog-header">
+          <span class="catalog-header-label">Fichas catalográficas</span>
+          <span class="catalog-count">10 entradas</span>
+        </div>
+
+        <article class="entry">
+          <div class="entry-num"><span>01</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível I — Partícula</span>
+              <h2 class="entry-title">Latência</h2>
+              <p class="entry-tagline">Uma palavra tentando escapar da sua presença.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">repulsão <em>60 px</em></span>
+                <span class="entry-param">raio <em>200 px</em></span>
+                <span class="entry-param">atrito <em>0.88</em></span>
+                <span class="entry-param">memória <em>não</em></span>
+              </div>
+              <a class="entry-link" href="/latencia.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="01"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>02</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível I — Partícula</span>
+              <h2 class="entry-title">Tensão</h2>
+              <p class="entry-tagline">A letra que sempre volta para onde deveria estar.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">k <em>0.06</em></span>
+                <span class="entry-param">amortecimento <em>0.87</em></span>
+                <span class="entry-param">regime <em>sub-amortecido</em></span>
+              </div>
+              <a class="entry-link" href="/tensao.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="02"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>03</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível I — Partícula</span>
+              <h2 class="entry-title">Ruído</h2>
+              <p class="entry-tagline">A palavra que nunca está completamente em repouso.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">campo <em>Perlin 3D</em></span>
+                <span class="entry-param">escala spatial <em>0.003</em></span>
+                <span class="entry-param">escala temporal <em>0.004</em></span>
+              </div>
+              <a class="entry-link" href="/ruido.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="03"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>04</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível I — Partícula</span>
+              <h2 class="entry-title">Traço</h2>
+              <p class="entry-tagline">O gesto que persiste mesmo depois de abandonado.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">velocidade <em>0.8–2.5</em></span>
+                <span class="entry-param">rastro <em>30–80 pt</em></span>
+                <span class="entry-param">salto <em>&gt;40 px</em></span>
+              </div>
+              <a class="entry-link" href="/traco.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="04"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>05</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível II — Campo</span>
+              <h2 class="entry-title">Eco</h2>
+              <p class="entry-tagline">Uma mesma palavra vista cinco vezes ao mesmo tempo.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">grade <em>9 px</em></span>
+                <span class="entry-param">ecos <em>5×</em></span>
+                <span class="entry-param">offset máx. <em>55 px</em></span>
+              </div>
+              <a class="entry-link" href="/eco.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="05"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>06</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível II — Campo</span>
+              <h2 class="entry-title">Névoa</h2>
+              <p class="entry-tagline">O texto que só existe quando o campo deixa aparecer.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">threshold <em>0.42–0.72</em></span>
+                <span class="entry-param">escala <em>0.006</em></span>
+                <span class="entry-param">tipo <em>Perlin 2D</em></span>
+              </div>
+              <a class="entry-link" href="/nevoa.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="06"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>07</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível II — Campo</span>
+              <h2 class="entry-title">Constelação</h2>
+              <p class="entry-tagline">Cada letra sabe onde estão as outras.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">raio <em>18–32 px</em></span>
+                <span class="entry-param">grade espacial <em>30 px</em></span>
+                <span class="entry-param">complexidade <em>O(n)</em></span>
+              </div>
+              <a class="entry-link" href="/constelacao.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="07"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>08</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível II — Campo</span>
+              <h2 class="entry-title">Erosão</h2>
+              <p class="entry-tagline">O tempo escreveu a palavra; o vento está apagando.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">vento <em>Perlin</em></span>
+                <span class="entry-param">delay radial</span>
+                <span class="entry-param">ciclo <em>400 frames</em></span>
+              </div>
+              <a class="entry-link" href="/erosao.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="08"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>09</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível III — Forma</span>
+              <h2 class="entry-title">Lente</h2>
+              <p class="entry-tagline">A palavra curva sob o peso do olhar.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">raio <em>180 px</em></span>
+                <span class="entry-param">força <em>1.4×</em></span>
+                <span class="entry-param">modelo <em>projeção esférica</em></span>
+              </div>
+              <a class="entry-link" href="/lente.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="09"></div>
+          </div>
+        </article>
+
+        <article class="entry">
+          <div class="entry-num"><span>10</span></div>
+          <div class="entry-body">
+            <div>
+              <span class="entry-level">Nível III — Forma</span>
+              <h2 class="entry-title">Halftone LED</h2>
+              <p class="entry-tagline">Cada letra é uma tela feita de luz.</p>
+            </div>
+            <div>
+              <div class="entry-params">
+                <span class="entry-param">grade <em>11 px</em></span>
+                <span class="entry-param">camadas <em>3×</em></span>
+                <span class="entry-param">cor <em>âmbar 255/185/40</em></span>
+              </div>
+              <a class="entry-link" href="/halftone.html">ABRIR EXPERIMENTO →</a>
+            </div>
+          </div>
+          <div class="entry-preview-col">
+            <div class="entry-preview" data-num="10"></div>
+          </div>
+        </article>
+
+      </main>
     </div>
 
-    <!-- ── about ── -->
-    <section id="about">
-      <div class="about-me">
-        <p class="about-tag">sobre o projeto</p>
-        <h2 class="about-name">TIPO SENSÍVEL</h2>
-        <p class="about-bio">
-          Uma série de experimentos em p5.js onde tipografia opera como
-          sistema físico — cada letra com massa, campo e memória.
-          Em vez de animar texto, o projeto investiga o que acontece quando
-          um signo passa a ter comportamento. Um estudo em andamento sobre
-          percepção, código e estética computacional.
-        </p>
-        <p class="about-year">2025 — em progresso</p>
-        <a href="https://github.com/aviniciussouzas/type-comportments"
-           target="_blank"
-           id="gh-link">
-          github.com/aviniciussouzas/type-comportments ↗
-        </a>
-      </div>
-      <div class="about-project">
-        <p class="about-tag">princípios</p>
-        <h2 class="about-name">Letra como<br>sistema físico</h2>
-        <p class="about-bio">
-          Letra como partícula · Sistema antes de efeito ·
-          Comportamento ≠ animação · Física como linguagem ·
-          Conceito antes de render · Signo com massa
-        </p>
-
-        <p class="about-tag" style="margin-top:32px">também por andrê souza</p>
-        <a href="https://github.com/aviniciussouzas/sinal" target="_blank" class="also-link">
-          Sinal — coordenação para times de design ↗
-        </a>
-        <a href="https://[judgment-console-url]" target="_blank" class="also-link">
-          Judgment Console — julgamento criativo como interface ↗
-        </a>
-      </div>
-    </section>
-
-    <!-- ── experimentos ── -->
-    <section id="experiments">
-
-      <div class="section-header"><span>nível 01 — palavras</span></div>
-      <div class="grid grid-level-01">
-        <a href="/latencia.html" class="card" data-num="01">
-          <span class="card-num">01</span>
-          <span class="card-name">LATÊNCIA</span>
-          <span class="card-concept">distância · repulsão · campo</span>
-        </a>
-        <a href="/tensao.html" class="card" data-num="02">
-          <span class="card-num">02</span>
-          <span class="card-name">TENSÃO</span>
-          <span class="card-concept">lei de Hooke · mola · oscilação</span>
-        </a>
-        <a href="/ruido.html" class="card" data-num="03">
-          <span class="card-num">03</span>
-          <span class="card-name">RUÍDO</span>
-          <span class="card-concept">Perlin noise · turbulência</span>
-        </a>
-        <a href="/traco.html" class="card" data-num="04">
-          <span class="card-num">04</span>
-          <span class="card-name">TRAÇO</span>
-          <span class="card-concept">contorno bezier · escrita</span>
-        </a>
-        <a href="/eco.html" class="card" data-num="05">
-          <span class="card-num">05</span>
-          <span class="card-name">ECO</span>
-          <span class="card-concept">rasterização · grid · eco</span>
-        </a>
-      </div>
-
-      <div class="section-header"><span>nível 02 — blocos de texto</span></div>
-      <div class="grid">
-        <a href="/nevoa.html" class="card" data-num="06">
-          <span class="card-num">06</span>
-          <span class="card-name">NÉVOA</span>
-          <span class="card-concept">noise como percepção · Mark Fisher</span>
-        </a>
-        <a href="/constelacao.html" class="card" data-num="07">
-          <span class="card-num">07</span>
-          <span class="card-name">CONSTELAÇÃO</span>
-          <span class="card-concept">grafo · proximidade · Teilhard</span>
-        </a>
-        <a href="/erosao.html" class="card" data-num="08">
-          <span class="card-num">08</span>
-          <span class="card-name">EROSÃO</span>
-          <span class="card-concept">vento · impermanência · Blake</span>
-        </a>
-      </div>
-
-      <div class="section-header"><span>nível 03 — forma + texto</span></div>
-      <div class="grid">
-        <a href="/lente.html" class="card" data-num="09">
-          <span class="card-num">09</span>
-          <span class="card-name">LENTE</span>
-          <span class="card-concept">projeção esférica · distorção óptica</span>
-        </a>
-        <a href="/halftone.html" class="card" data-num="10">
-          <span class="card-num">10</span>
-          <span class="card-name">HALFTONE LED</span>
-          <span class="card-concept">LED · luz aditiva · input</span>
-        </a>
-      </div>
-
-    </section>
+    <footer class="site-footer">
+      <span class="footer-copy">TIPO SENSÍVEL — Arquivo de Pesquisa Visual · 2024–2025</span>
+      <a class="footer-link" href="https://github.com/aviniciussouzas/type-comportments" target="_blank" rel="noopener">GITHUB ↗</a>
+    </footer>
 
     <script type="module" src="/src/home.js"></script>
   </body>
